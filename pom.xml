@@ -135,11 +135,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.48</version>
+    </dependency>
+    <dependency>
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
       <version>3.0.8</version>
-      <scope>provided</scope>
-      <optional>true</optional>
+<!--      <scope>provided</scope>-->
+<!--      <optional>true</optional>-->
       <exclusions>
          <exclusion>
             <groupId>javassist</groupId>
@@ -151,8 +156,8 @@
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>3.18.2-GA</version>
-      <scope>provided</scope>
-      <optional>true</optional>
+<!--      <scope>provided</scope>-->
+<!--      <optional>true</optional>-->
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
