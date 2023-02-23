@@ -248,6 +248,10 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //1.properties
+    //<!-- 方法一： 从外部指定properties配置文件, 除了使用resource属性指定外，还可通过url属性指定url
+    //    <properties resource="dbConfig.properties"></properties>
+    //-->
+    //<!-- 方法二： 直接配置为xml -->
     //<properties resource="org/mybatis/example/config.properties">
     //    <property name="username" value="dev_user"/>
     //    <property name="password" value="F2Fa3!33TYyg"/>
@@ -257,8 +261,8 @@ public class XMLConfigBuilder extends BaseBuilder {
             //如果在这些地方,属性多于一个的话,MyBatis 按照如下的顺序加载它们:
 
             //1.在 properties 元素体内指定的属性首先被读取。
-            //2.从类路径下资源或 properties 元素的 url 属性中加载的属性第二被读取,它会覆盖已经存在的完全一样的属性。
-            //3.作为方法参数传递的属性最后被读取, 它也会覆盖任一已经存在的完全一样的属性,这些属性可能是从 properties 元素体内和资源/url 属性中加载的。
+            //2.从类路径下资源resource 或 properties 元素的 url 属性中加载的属性第二被读取,它会覆盖已经存在的完全一样的属性。
+            //3.作为方法参数传递的属性最后被读取, 它也会覆盖任一已经存在的完全一样的属性,这些属性可能是从 properties 元素体内和resource/url 属性中加载的。
             //传入方式是调用构造函数时传入，public XMLConfigBuilder(Reader reader, String environment, Properties props)
 
             //1.XNode.getChildrenAsProperties函数方便得到孩子所有Properties
@@ -269,17 +273,24 @@ public class XMLConfigBuilder extends BaseBuilder {
             if (resource != null && url != null) {
                 throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
             }
+            // 把解析出的properties文件set进Properties对象
             if (resource != null) {
                 defaults.putAll(Resources.getResourceAsProperties(resource));
             } else if (url != null) {
                 defaults.putAll(Resources.getUrlAsProperties(url));
             }
             //3.Variables也全部加入Properties
+            // 将configuration对象中已配置的Properties属性与刚刚解析的融合
+            // configuration这个对象会装载所解析mybatis配置文件的所有节点元素，以后也会频频提到这个对象
+            // 既然configuration对象用有一系列的get/set方法， 那是否就标志着我们可以使用java代码直接配置？
+            // 答案是肯定的， 不过使用配置文件进行配置，优势不言而喻
             Properties vars = configuration.getVariables();
             if (vars != null) {
                 defaults.putAll(vars);
             }
+            // 把装有解析配置properties对象set进解析器， 因为后面可能会用到
             parser.setVariables(defaults);
+            // set进configuration对象
             configuration.setVariables(defaults);
         }
     }
@@ -382,15 +393,23 @@ public class XMLConfigBuilder extends BaseBuilder {
     private void environmentsElement(XNode context) throws Exception {
         if (context != null) {
             if (environment == null) {
+                //解析environments节点的default属性的值
+                //例如: <environments default="development">
                 environment = context.getStringAttribute("default");
             }
             for (XNode child : context.getChildren()) {
+                //<environment id="development">, 只有enviroment节点有id属性，那么这个属性有何作用？
+                //environments 节点下可以拥有多个 environment子节点
+                //类似于这样： <environments default="development"><environment id="development">...</environment><environment id="test">...</environments>
+                //意思就是我们可以对应多个环境，比如开发环境，测试环境等， 由environments的default属性去选择对应的enviroment
                 String id = child.getStringAttribute("id");
-                //循环比较id是否就是指定的environment
+                //isSpecial就是根据由environments的default属性去选择对应的enviroment
                 if (isSpecifiedEnvironment(id)) {
                     // 1.创建事务工厂 TransactionFactory
+                    // mybatis有两种：JDBC 和 MANAGED, 配置为JDBC则直接使用JDBC的事务，配置为MANAGED则是将事务托管给容器
                     TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
                     // 2.创建数据源DataSource
+                    // enviroment节点下面就是dataSource节点了，解析dataSource节点（下面会贴出解析dataSource的具体方法）
                     DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
                     DataSource dataSource = dsFactory.getDataSource();
                     // 3. 构造Environment对象
@@ -437,9 +456,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //7.1事务管理器
-//<transactionManager type="JDBC">
-//  <property name="..." value="..."/>
-//</transactionManager>
+    //<transactionManager type="JDBC">
+    //  <property name="..." value="..."/>
+    //</transactionManager>
     private TransactionFactory transactionManagerElement(XNode context) throws Exception {
         if (context != null) {
             String type = context.getStringAttribute("type");
@@ -453,15 +472,17 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //7.2数据源
-//<dataSource type="POOLED">
-//  <property name="driver" value="${driver}"/>
-//  <property name="url" value="${url}"/>
-//  <property name="username" value="${username}"/>
-//  <property name="password" value="${password}"/>
-//</dataSource>
+    //<dataSource type="POOLED">
+    //  <property name="driver" value="${driver}"/>
+    //  <property name="url" value="${url}"/>
+    //  <property name="username" value="${username}"/>
+    //  <property name="password" value="${password}"/>
+    //</dataSource>
     private DataSourceFactory dataSourceElement(XNode context) throws Exception {
         if (context != null) {
+            //dataSource的连接池
             String type = context.getStringAttribute("type");
+            //子节点name, value属性set进一个properties对象
             Properties props = context.getChildrenAsProperties();
             //根据type="POOLED"解析返回适当的DataSourceFactory
             DataSourceFactory factory = (DataSourceFactory) resolveClass(type).newInstance();
