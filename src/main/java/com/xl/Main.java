@@ -11,37 +11,43 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This class is for xxxx.
+ * This class is for 调试 mybatis 连接数据库
  *
  * @author kk37005
  */
 public class Main {
 
     public static void main(String[] args) {
+        // 初始化配置
         String resource = "mybatis-config.xml";
         InputStream inputStream = null;
         try {
             inputStream = Resources.getResourceAsStream(resource);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        SqlSessionFactory sqlSessionFactory = null;
-        sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
         SqlSession sqlSession = null;
         try {
+            // 创建 sqlSession
             sqlSession = sqlSessionFactory.openSession();
+
+            // 创建 执行语句
             RoleMapper roleMapper = sqlSession.getMapper(RoleMapper.class);
             Role role = roleMapper.getRole(1L);
             System.out.println(role.getId() + ":" + role.getRoleName() + ":" + role.getNote());
             sqlSession.commit();
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            sqlSession.rollback();
+            if (sqlSession != null) {
+                sqlSession.rollback();
+            }
             e.printStackTrace();
         } finally {
-            sqlSession.close();
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
         }
     }
 }
