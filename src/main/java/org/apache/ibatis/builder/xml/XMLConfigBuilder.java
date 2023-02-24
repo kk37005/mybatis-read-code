@@ -162,28 +162,30 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //2.类型别名
-//<typeAliases>
-//  <typeAlias alias="Author" type="domain.blog.Author"/>
-//  <typeAlias alias="Blog" type="domain.blog.Blog"/>
-//  <typeAlias alias="Comment" type="domain.blog.Comment"/>
-//  <typeAlias alias="Post" type="domain.blog.Post"/>
-//  <typeAlias alias="Section" type="domain.blog.Section"/>
-//  <typeAlias alias="Tag" type="domain.blog.Tag"/>
-//</typeAliases>
-//or    
-//<typeAliases>
-//  <package name="domain.blog"/>
-//</typeAliases>  
+    //<typeAliases>
+    //  <typeAlias alias="Author" type="domain.blog.Author"/>
+    //  <typeAlias alias="Blog" type="domain.blog.Blog"/>
+    //  <typeAlias alias="Comment" type="domain.blog.Comment"/>
+    //  <typeAlias alias="Post" type="domain.blog.Post"/>
+    //  <typeAlias alias="Section" type="domain.blog.Section"/>
+    //  <typeAlias alias="Tag" type="domain.blog.Tag"/>
+    //</typeAliases>
+    //or
+    //<typeAliases>
+    //  <package name="domain.blog"/>
+    //</typeAliases>
     private void typeAliasesElement(XNode parent) {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
+                //如果子节点是package, 那么就获取package节点的name属性， mybatis会扫描指定的package
                 if ("package".equals(child.getName())) {
                     //如果是package
                     String typeAliasPackage = child.getStringAttribute("name");
                     //（一）调用TypeAliasRegistry.registerAliases，去包下找所有类,然后注册别名(有@Alias注解则用，没有则取类的simpleName)
+                    //TypeAliasRegistry 负责管理别名， 这儿就是通过TypeAliasRegistry 进行别名注册
                     configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
                 } else {
-                    //如果是typeAlias
+                    //如果是typeAlias，那么就获取alias属性和type的属性值
                     String alias = child.getStringAttribute("alias");
                     String type = child.getStringAttribute("type");
                     try {
@@ -206,11 +208,11 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     //3.插件
     //MyBatis 允许你在某一点拦截已映射语句执行的调用。默认情况下,MyBatis 允许使用插件来拦截方法调用
-//<plugins>
-//  <plugin interceptor="org.mybatis.example.ExamplePlugin">
-//    <property name="someProperty" value="100"/>
-//  </plugin>
-//</plugins>  
+    //<plugins>
+    //  <plugin interceptor="org.mybatis.example.ExamplePlugin">
+    //    <property name="someProperty" value="100"/>
+    //  </plugin>
+    //</plugins>
     private void pluginElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
@@ -225,9 +227,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //4.对象工厂,可以自定义对象创建的方式,比如用对象池？
-//<objectFactory type="org.mybatis.example.ExampleObjectFactory">
-//  <property name="someProperty" value="100"/>
-//</objectFactory>
+    //<objectFactory type="org.mybatis.example.ExampleObjectFactory">
+    //  <property name="someProperty" value="100"/>
+    //</objectFactory>
     private void objectFactoryElement(XNode context) throws Exception {
         if (context != null) {
             String type = context.getStringAttribute("type");
@@ -297,21 +299,21 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     //6.设置
     //这些是极其重要的调整, 它们会修改 MyBatis 在运行时的行为方式
-//<settings>
-//  <setting name="cacheEnabled" value="true"/>
-//  <setting name="lazyLoadingEnabled" value="true"/>
-//  <setting name="multipleResultSetsEnabled" value="true"/>
-//  <setting name="useColumnLabel" value="true"/>
-//  <setting name="useGeneratedKeys" value="false"/>
-//  <setting name="enhancementEnabled" value="false"/>
-//  <setting name="defaultExecutorType" value="SIMPLE"/>
-//  <setting name="defaultStatementTimeout" value="25000"/>
-//  <setting name="safeRowBoundsEnabled" value="false"/>
-//  <setting name="mapUnderscoreToCamelCase" value="false"/>
-//  <setting name="localCacheScope" value="SESSION"/>
-//  <setting name="jdbcTypeForNull" value="OTHER"/>
-//  <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
-//</settings>
+    //<settings>
+    //  <setting name="cacheEnabled" value="true"/>
+    //  <setting name="lazyLoadingEnabled" value="true"/>
+    //  <setting name="multipleResultSetsEnabled" value="true"/>
+    //  <setting name="useColumnLabel" value="true"/>
+    //  <setting name="useGeneratedKeys" value="false"/>
+    //  <setting name="enhancementEnabled" value="false"/>
+    //  <setting name="defaultExecutorType" value="SIMPLE"/>
+    //  <setting name="defaultStatementTimeout" value="25000"/>
+    //  <setting name="safeRowBoundsEnabled" value="false"/>
+    //  <setting name="mapUnderscoreToCamelCase" value="false"/>
+    //  <setting name="localCacheScope" value="SESSION"/>
+    //  <setting name="jdbcTypeForNull" value="OTHER"/>
+    //  <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+    //</settings>
     private void settingsElement(XNode context) throws Exception {
         if (context != null) {
             Properties props = context.getChildrenAsProperties();
@@ -374,8 +376,8 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 解析environments节点，并将结果设置到Configuration对象中
      * 注意：创建envronment时，如果SqlSessionFactoryBuilder指定了特定的环境（即数据源）；
-     *      则返回指定环境（数据源）的Environment对象，否则返回默认的Environment对象；
-     *      这种方式实现了MyBatis可以连接多数据源
+     * 则返回指定环境（数据源）的Environment对象，否则返回默认的Environment对象；
+     * 这种方式实现了MyBatis可以连接多数据源
      */
     //	<environments default="development">
     //	  <environment id="development">
@@ -493,30 +495,37 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //9.类型处理器
-//	<typeHandlers>
-//	  <typeHandler handler="org.mybatis.example.ExampleTypeHandler"/>
-//	</typeHandlers>
-//or
-//	<typeHandlers>
-//	  <package name="org.mybatis.example"/>
-//	</typeHandlers>
+    //	<typeHandlers>
+    //	  <typeHandler handler="org.mybatis.example.ExampleTypeHandler"/>
+    //	</typeHandlers>
+    //or
+    //	<typeHandlers>
+    //	  <package name="org.mybatis.example"/>
+    //	</typeHandlers>
     private void typeHandlerElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
-                //如果是package
+                //如果是package，获取其name属性的值，然后自动扫描package下的自定义typeHandler
                 if ("package".equals(child.getName())) {
                     String typeHandlerPackage = child.getStringAttribute("name");
                     //（一）调用TypeHandlerRegistry.register，去包下找所有类
                     typeHandlerRegistry.register(typeHandlerPackage);
                 } else {
                     //如果是typeHandler
+                    //子节点为typeHandler时， 可以指定javaType属性， 也可以指定jdbcType, 也可两者都指定
+                    //javaType 是指定java类型
+                    //jdbcType 是指定jdbc类型（数据库类型： 如varchar）
                     String javaTypeName = child.getStringAttribute("javaType");
                     String jdbcTypeName = child.getStringAttribute("jdbcType");
+                    //handler就是我们配置的typeHandler
                     String handlerTypeName = child.getStringAttribute("handler");
+                    //resolveClass方法就是我们上篇文章所讲的TypeAliasRegistry里面处理别名的方法
                     Class<?> javaTypeClass = resolveClass(javaTypeName);
+                    //JdbcType是一个枚举类型，resolveJdbcType方法是在获取枚举类型的值
                     JdbcType jdbcType = resolveJdbcType(jdbcTypeName);
                     Class<?> typeHandlerClass = resolveClass(handlerTypeName);
                     //（二）调用TypeHandlerRegistry.register(以下是3种不同的参数形式)
+                    //注册typeHandler, typeHandler通过TypeHandlerRegistry这个类管理
                     if (javaTypeClass != null) {
                         if (jdbcType == null) {
                             typeHandlerRegistry.register(javaTypeClass, typeHandlerClass);
@@ -532,31 +541,31 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //10.映射器
-//	10.1使用类路径
-//	<mappers>
-//	  <mapper resource="org/mybatis/builder/AuthorMapper.xml"/>
-//	  <mapper resource="org/mybatis/builder/BlogMapper.xml"/>
-//	  <mapper resource="org/mybatis/builder/PostMapper.xml"/>
-//	</mappers>
-//
-//	10.2使用绝对url路径
-//	<mappers>
-//	  <mapper url="file:///var/mappers/AuthorMapper.xml"/>
-//	  <mapper url="file:///var/mappers/BlogMapper.xml"/>
-//	  <mapper url="file:///var/mappers/PostMapper.xml"/>
-//	</mappers>
-//
-//	10.3使用java类名
-//	<mappers>
-//	  <mapper class="org.mybatis.builder.AuthorMapper"/>
-//	  <mapper class="org.mybatis.builder.BlogMapper"/>
-//	  <mapper class="org.mybatis.builder.PostMapper"/>
-//	</mappers>
-//
-//	10.4自动扫描包下所有映射器
-//	<mappers>
-//	  <package name="org.mybatis.builder"/>
-//	</mappers>
+    //	10.1使用类路径
+    //	<mappers>
+    //	  <mapper resource="org/mybatis/builder/AuthorMapper.xml"/>
+    //	  <mapper resource="org/mybatis/builder/BlogMapper.xml"/>
+    //	  <mapper resource="org/mybatis/builder/PostMapper.xml"/>
+    //	</mappers>
+    //
+    //	10.2使用绝对url路径
+    //	<mappers>
+    //	  <mapper url="file:///var/mappers/AuthorMapper.xml"/>
+    //	  <mapper url="file:///var/mappers/BlogMapper.xml"/>
+    //	  <mapper url="file:///var/mappers/PostMapper.xml"/>
+    //	</mappers>
+    //
+    //	10.3使用java类名
+    //	<mappers>
+    //	  <mapper class="org.mybatis.builder.AuthorMapper"/>
+    //	  <mapper class="org.mybatis.builder.BlogMapper"/>
+    //	  <mapper class="org.mybatis.builder.PostMapper"/>
+    //	</mappers>
+    //
+    //	10.4自动扫描包下所有映射器
+    //	<mappers>
+    //	  <package name="org.mybatis.builder"/>
+    //	</mappers>
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
