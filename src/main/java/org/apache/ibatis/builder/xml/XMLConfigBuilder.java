@@ -218,6 +218,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             for (XNode child : parent.getChildren()) {
                 String interceptor = child.getStringAttribute("interceptor");
                 Properties properties = child.getChildrenAsProperties();
+                //由此可见，我们在定义一个interceptor的时候，需要去实现Interceptor, 这儿先不具体讲，以后会详细讲解
                 Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).newInstance();
                 interceptorInstance.setProperties(properties);
                 //调用InterceptorChain.addInterceptor
@@ -232,7 +233,10 @@ public class XMLConfigBuilder extends BaseBuilder {
     //</objectFactory>
     private void objectFactoryElement(XNode context) throws Exception {
         if (context != null) {
+            //读取type属性的值， 接下来进行实例化ObjectFactory, 并set进 configuration
+            //到此，简单讲一下configuration这个对象，其实它里面主要保存的都是mybatis的配置
             String type = context.getStringAttribute("type");
+            //读取propertie的值， 根据需要可以配置， mybatis默认实现的objectFactory没有使用properties
             Properties properties = context.getChildrenAsProperties();
             ObjectFactory factory = (ObjectFactory) resolveClass(type).newInstance();
             factory.setProperties(properties);
@@ -571,12 +575,15 @@ public class XMLConfigBuilder extends BaseBuilder {
             for (XNode child : parent.getChildren()) {
                 if ("package".equals(child.getName())) {
                     //10.4自动扫描包下所有映射器
+                    //如果mappers节点的子节点是package, 那么就扫描package下的文件, 注入进configuration
                     String mapperPackage = child.getStringAttribute("name");
                     configuration.addMappers(mapperPackage);
                 } else {
                     String resource = child.getStringAttribute("resource");
                     String url = child.getStringAttribute("url");
                     String mapperClass = child.getStringAttribute("class");
+                    //resource, url, class 三选一
+
                     if (resource != null && url == null && mapperClass == null) {
                         //10.1使用类路径
                         ErrorContext.instance().resource(resource);
