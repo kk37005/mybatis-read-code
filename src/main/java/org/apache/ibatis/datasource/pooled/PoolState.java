@@ -38,7 +38,9 @@ public class PoolState {
   //总请求时间
   protected long accumulatedRequestTime = 0;
   protected long accumulatedCheckoutTime = 0;
+  // 索赔逾期连接次数
   protected long claimedOverdueConnectionCount = 0;
+  // 累计checkout逾期时长
   protected long accumulatedCheckoutTimeOfOverdueConnections = 0;
   //总等待时间
   protected long accumulatedWaitTime = 0;

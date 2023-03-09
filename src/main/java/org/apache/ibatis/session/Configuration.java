@@ -511,10 +511,13 @@ public class Configuration {
         Executor executor;
         //然后就是简单的3个分支，产生3种执行器BatchExecutor/ReuseExecutor/SimpleExecutor
         if (ExecutorType.BATCH == executorType) {
+            // 批量执行器
             executor = new BatchExecutor(this, transaction);
         } else if (ExecutorType.REUSE == executorType) {
+            // 重用执行器
             executor = new ReuseExecutor(this, transaction);
         } else {
+            // 简单执行器
             executor = new SimpleExecutor(this, transaction);
         }
         //如果要求缓存，生成另一种CachingExecutor(默认就是有缓存),装饰者模式,所以默认都是返回CachingExecutor

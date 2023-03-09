@@ -26,6 +26,12 @@
         <!-- javaType 配置java类型，例如String, 如果配上javaType, 那么指定的typeHandler就只作用于指定的类型 -->
         <typeHandler jdbcType="VARCHAR" javaType="string" handler="com.xl.handler.MyStringHandler"/>
     </typeHandlers>
+
+    <plugins>
+        <plugin interceptor="com.xl.plugin.ExamplePlugin"/>
+        <plugin interceptor="com.xl.plugin.PageInterceptor"/>
+    </plugins>
+
     <!-- 定义数据库的信息，默认使用development数据库构建环境 -->
     <environments default="development">
         <environment id="development">
@@ -89,4 +95,5 @@
         -->
 
     </mappers>
+
 </configuration>

@@ -37,6 +37,9 @@ public class Main {
             RoleMapper roleMapper = sqlSession.getMapper(RoleMapper.class);
             Role role = roleMapper.getRole(1L);
             System.out.println(role.getId() + ":" + role.getRoleName() + ":" + role.getNote());
+
+            role = roleMapper.getRole(1L);
+            System.out.println(role.getId() + ":" + role.getRoleName() + ":" + role.getNote());
             sqlSession.commit();
 
         } catch (Exception e) {

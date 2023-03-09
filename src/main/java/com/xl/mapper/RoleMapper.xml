@@ -42,7 +42,7 @@ Mapper元素只有一个属性namespace，它有两个作用：
                 typeHandler="com.xl.handler.MyStringHandler" />
     </resultMap>
 
-    <select id="getRole" parameterType="long" resultMap="roleMap">
+    <select id="getRole" parameterType="long" resultMap="roleMap" useCache="true">
         select id,role_name as roleName,note from role where id=#{id}
     </select>
 

@@ -26,13 +26,13 @@ import java.util.Properties;
  */
 public interface Interceptor {
 
-  //拦截
+  //拦截:实现拦截逻辑的地方
   Object intercept(Invocation invocation) throws Throwable;
 
-  //插入
+  //插入:用当前这个拦截器生成对目标target的代理，实际是通过Plugin.wrap(target,this)来完成的，把目标target和拦截器this传给了包装函数
   Object plugin(Object target);
 
-  //设置属性
+  //设置属性:用于设置额外的参数，参数配置在拦截器的Properties节点里
   void setProperties(Properties properties);
 
 }

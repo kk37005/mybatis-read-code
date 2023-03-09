@@ -103,6 +103,7 @@ public class CachingExecutor implements Executor {
                 List<E> list = (List<E>) tcm.getObject(cache, key);
                 if (list == null) {
                     list = delegate.<E>query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+                    // 这里是先暂存起来，等commit后才真正存进二级缓存中。
                     tcm.putObject(cache, key, list); // issue #578 and #116
                 }
                 return list;

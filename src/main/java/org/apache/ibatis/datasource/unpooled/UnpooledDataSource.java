@@ -188,6 +188,7 @@ public class UnpooledDataSource implements DataSource {
   }
 
   private Connection doGetConnection(String username, String password) throws SQLException {
+    //封装username和password成properties
     Properties props = new Properties();
     if (driverProperties != null) {
       props.putAll(driverProperties);
@@ -202,9 +203,12 @@ public class UnpooledDataSource implements DataSource {
   }
 
   private Connection doGetConnection(Properties properties) throws SQLException {
+    //1.初始化驱动
     initializeDriver();
-    //属性的前缀是以“driver.”开 头的,它 是 通 过 DriverManager.getConnection(url,driverProperties)方法传递给数据库驱动
+    //2.从DriverManager中获取连接，获取新的Connection对象
+    //属性的前缀是以“driver.”开头的,它是通过DriverManager.getConnection(url,driverProperties)方法传递给数据库驱动
     Connection connection = DriverManager.getConnection(url, properties);
+    //3.配置connection属性
     configureConnection(connection);
     return connection;
   }
