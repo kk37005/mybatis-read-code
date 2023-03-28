@@ -62,14 +62,14 @@ public class CacheKey implements Cloneable, Serializable {
 
   public void update(Object object) {
     if (object != null && object.getClass().isArray()) {
-        //如果是数组，则循环调用doUpdate
+      //如果是数组，则循环调用doUpdate
       int length = Array.getLength(object);
       for (int i = 0; i < length; i++) {
         Object element = Array.get(object, i);
         doUpdate(element);
       }
     } else {
-        //否则，doUpdate
+      //否则，doUpdate
       doUpdate(object);
     }
   }
@@ -78,10 +78,12 @@ public class CacheKey implements Cloneable, Serializable {
     //计算hash值，校验码
     int baseHashCode = object == null ? 1 : object.hashCode();
 
+    //对象计数递增
     count++;
     checksum += baseHashCode;
+    //对象的hashcode 扩大count倍
     baseHashCode *= count;
-
+    //hashCode * 拓展因子（默认37）+拓展扩大后的对象hashCode值
     hashcode = multiplier * hashcode + baseHashCode;
 
     //同时将对象加入列表，这样万一两个CacheKey的hash码碰巧一样，再根据对象严格equals来区分

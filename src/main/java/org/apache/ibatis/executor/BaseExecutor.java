@@ -224,6 +224,7 @@ public abstract class BaseExecutor implements Executor {
         cacheKey.update(Integer.valueOf(rowBounds.getOffset()));
         cacheKey.update(Integer.valueOf(rowBounds.getLimit()));
         cacheKey.update(boundSql.getSql());
+        //5. 将每一个要传递给JDBC的参数值也更新到CacheKey中
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         TypeHandlerRegistry typeHandlerRegistry = ms.getConfiguration().getTypeHandlerRegistry();
         // mimic DefaultParameterHandler logic
@@ -243,6 +244,7 @@ public abstract class BaseExecutor implements Executor {
                     MetaObject metaObject = configuration.newMetaObject(parameterObject);
                     value = metaObject.getValue(propertyName);
                 }
+                //将每一个要传递给JDBC的参数值也更新到CacheKey中
                 cacheKey.update(value);
             }
         }

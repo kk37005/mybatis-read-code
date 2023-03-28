@@ -21,10 +21,12 @@ Mapper元素只有一个属性namespace，它有两个作用：
            WEAK– 弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。
        flushInterval- 刷新间隔，默认为1个小时，单位毫秒
        size- 缓存大小，默认大小1024，单位为引用数
-       readOnly- 只读
+       readOnly- 只读,是否只读默认false
+           如果True： 所有的sql返回的是一个对象，性能高，并发安全性底
+           如果false：返回的是序列化后的副本，安全高，效率底
     -->
-    <cache type="PERPETUAL" eviction="LRU" flushInterval="60000"
-           size="1024" readOnly="true" />
+<!--    <cache type="PERPETUAL" eviction="LRU" flushInterval="60000" size="1024" readOnly="true" />-->
+    <cache type="com.xl.handler.MyCache" eviction="LRU" flushInterval="60000" size="1024" readOnly="true" />
 
     <!--
     cache-ref–从其他命名空间引用缓存配置。
@@ -42,8 +44,12 @@ Mapper元素只有一个属性namespace，它有两个作用：
                 typeHandler="com.xl.handler.MyStringHandler" />
     </resultMap>
 
-    <select id="getRole" parameterType="long" resultMap="roleMap" useCache="true">
+    <select id="getRole" parameterType="long" resultMap="roleMap" useCache="false">
         select id,role_name as roleName,note from role where id=#{id}
+    </select>
+
+    <select id="getRoleByName" resultMap="roleMap" useCache="true">
+        select id,role_name as roleName,note from role where id=#{id} and role_name=#{roleName}
     </select>
 
     <select id="findRole" parameterType="long" resultMap="roleMap">

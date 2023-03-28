@@ -35,7 +35,7 @@ public class Main {
 
             // 创建 执行语句
             RoleMapper roleMapper = sqlSession.getMapper(RoleMapper.class);
-            Role role = roleMapper.getRole(1L);
+            Role role = roleMapper.getRoleByName(1L, "张三");
             System.out.println(role.getId() + ":" + role.getRoleName() + ":" + role.getNote());
 
             role = roleMapper.getRole(1L);

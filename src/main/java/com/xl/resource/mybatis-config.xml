@@ -6,6 +6,7 @@
     <properties resource="jdbc.properties" />
     <settings>
         <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="cacheEnabled" value="true"/>
         <!-- <setting name="aggressiveLazyLoading" value="false"/> -->
     </settings>
     <typeAliases>
