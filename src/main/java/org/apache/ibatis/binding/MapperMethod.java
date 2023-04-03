@@ -63,7 +63,7 @@ public class MapperMethod {
             result = rowCountResult(sqlSession.delete(command.getName(), param));
         } else if (SqlCommandType.SELECT == command.getType()) {
             if (method.returnsVoid() && method.hasResultHandler()) {
-                //如果有结果处理器
+                //如果返回值为空,且有结果处理器
                 executeWithResultHandler(sqlSession, args);
                 result = null;
             } else if (method.returnsMany()) {

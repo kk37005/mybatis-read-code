@@ -101,7 +101,7 @@ public class CacheBuilder {
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
-          //装饰者模式一个个包装cache
+        //装饰者模式一个个包装cache
         cache = newCacheDecoratorInstance(decorator, cache);
         //又要来一遍设额外属性
         setCacheProperties(cache);
@@ -138,7 +138,7 @@ public class CacheBuilder {
         ((ScheduledCache) cache).setClearInterval(clearInterval);
       }
       if (readWrite) {
-          //如果readOnly=false,可读写的缓存 会返回缓存对象的拷贝(通过序列化) 。这会慢一些,但是安全,因此默认是 false。
+        //如果readOnly=false,可读写的缓存 会返回缓存对象的拷贝(通过序列化) 。这会慢一些,但是安全,因此默认是 false。
         cache = new SerializedCache(cache);
       }
       //日志缓存

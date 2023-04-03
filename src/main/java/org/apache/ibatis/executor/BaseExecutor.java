@@ -59,7 +59,7 @@ public abstract class BaseExecutor implements Executor {
     //延迟加载队列（线程安全）
     protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
     //本地缓存机制（Local Cache）防止循环引用（circular references）和加速重复嵌套查询(一级缓存)
-    //本地缓存
+    //本地一级缓存
     protected PerpetualCache localCache;
     //本地输出参数缓存
     protected PerpetualCache localOutputParameterCache;
@@ -166,7 +166,7 @@ public abstract class BaseExecutor implements Executor {
         try {
             //加一,这样递归调用到上面的时候就不会再清局部缓存了
             queryStack++;
-            //先根据cachekey从localCache去查
+            //先根据cachekey从localCache去查（查询一级缓存）
             list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
             if (list != null) {
                 //若查到localCache缓存，处理localOutputParameterCache

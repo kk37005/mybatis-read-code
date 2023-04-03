@@ -100,6 +100,7 @@ public class CachingExecutor implements Executor {
             if (ms.isUseCache() && resultHandler == null) {
                 ensureNoOutParams(ms, parameterObject, boundSql);
                 @SuppressWarnings("unchecked")
+                // 查询二级缓存
                 List<E> list = (List<E>) tcm.getObject(cache, key);
                 if (list == null) {
                     list = delegate.<E>query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);

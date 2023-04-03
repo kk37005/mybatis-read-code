@@ -25,8 +25,8 @@ Mapper元素只有一个属性namespace，它有两个作用：
            如果True： 所有的sql返回的是一个对象，性能高，并发安全性底
            如果false：返回的是序列化后的副本，安全高，效率底
     -->
-<!--    <cache type="PERPETUAL" eviction="LRU" flushInterval="60000" size="1024" readOnly="true" />-->
-    <cache type="com.xl.handler.MyCache" eviction="LRU" flushInterval="60000" size="1024" readOnly="true" />
+    <cache type="PERPETUAL" eviction="LRU" flushInterval="60000" size="1024" readOnly="true" />
+<!--    <cache type="com.xl.handler.MyCache" eviction="LRU" flushInterval="60000" size="1024" readOnly="true" />-->
 
     <!--
     cache-ref–从其他命名空间引用缓存配置。
