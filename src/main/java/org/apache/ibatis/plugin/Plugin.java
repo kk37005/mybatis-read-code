@@ -120,9 +120,8 @@ public class Plugin implements InvocationHandler {
         //循环type类型的接口信息 如果该类型存在与signatureMap当中则加入到set当中去
         while (type != null) {
             for (Class<?> c : type.getInterfaces()) {
-                //貌似只能拦截ParameterHandler|ResultSetHandler|StatementHandler|Executor
-                //拦截其他的无效
-                //当然我们可以覆盖Plugin.wrap方法，达到拦截其他类的功能
+                // mybatis只拦截ParameterHandler|ResultSetHandler|StatementHandler|Executor
+                // 其实拦截是与 @Signature设置了type class 有关联的
                 if (signatureMap.containsKey(c)) {
                     interfaces.add(c);
                 }
