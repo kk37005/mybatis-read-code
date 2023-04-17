@@ -27,7 +27,10 @@ public class ExamplePlugin implements Interceptor {
 
     //插入:用当前这个拦截器生成对目标target的代理，实际是通过Plugin.wrap(target,this)来完成的，把目标target和拦截器this传给了包装函数
     public Object plugin(Object target) {
-        return Plugin.wrap(target, this);
+        if(target instanceof Executor){
+            return Plugin.wrap(target, this);
+        }
+        return target;
     }
 
     //设置属性:用于设置额外的参数，参数配置在拦截器的Properties节点里
